@@ -71,16 +71,16 @@
 		<p>Note that the check here for each point is performed only within the bounding box of the triangle. The bounding box of a triangle is the smallest rectangle that the triangle can fit inside, and the bounding box can be obtained by finding the minimum and maximum x and y coordinates of the triangle's vertices. Therefore, the algorithm implemented in the code is to check each sample within the bounding box of the triangle; it is efficient enough for the purpose.</p>
 
 		<p>Below is an example of rendering an svg file with basic rasterization.</p>
-		<figure style="text-align: center;">
+		<figure>
 			<img src="./img/screenshot_7-6_23-53-6.png" width="400px"/>
-			<figcaption>Caption goes here.</figcaption>
+			<figcaption>Basic rasterization</figcaption>
 		</figure>
 
 		<p>If you look at the thin section of a triangle here, the shape appears to be "broken". This happens because the triangle's sides pass between the points in the middle of the grid, and the points beyond are included between the triangle's sides. You can see this in the figure below:</p>
 		
-		<figure style="text-align: center;">
+		<figure>
 			<img src="./img/screenshot_7-6_23-52-38.png" width="400px"/>
-			<figcaption>Caption goes here.</figcaption>
+			<figcaption>Pixel inspection</figcaption>
 		</figure>
 
 		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
@@ -116,11 +116,101 @@
 
 		<p>Detailed explanation of the code that implements supersampling: For an image of the original <code>width × height</code>, when <code>sample_rate</code> samples are placed in one pixel, the scaling rate for one axis is <code>sideRate = sqrt(sample_rate)</code>. And in the <code>sample_buffer</code>, the sample at the index <code>y * width * sideRate + x</code> corresponds to the coordinate \( ((x+0.5)/r, (y+0.5)/r) \) where \(r\) is the <code>sideRate</code>. </p>
 
+		<p>The following shows the renders for sample rates of 1, 4, and 16 respectively.</p>
+
+		<div class="table-container">
+			<table class="table">
+			  <tr>
+				<td>
+				  <img src="./img/screenshot_7-6_23-56-45.png" width="400px"/>
+				  <figcaption>sample rate = 1</figcaption>
+				</td>
+				<td>
+				  <img src="./img/screenshot_7-6_23-57-11.png" width="400px"/>
+				  <figcaption>pixel-inspected</figcaption>
+				</td>
+				</tr>
+				<tr>
+				<td>
+				  <img src="./img/screenshot_7-6_23-56-47.png" width="400px"/>
+				  <figcaption>sample rate = 4</figcaption>
+				</td>
+				<td>
+				  <img src="./img/screenshot_7-6_23-57-13.png" width="400px"/>
+				  <figcaption>pixel-inspected</figcaption>
+				</td>
+				</tr><tr>
+				<td>
+				  <img src="./img/screenshot_7-6_23-56-48.png" width="400px"/>
+				  <figcaption>sample rate = 16</figcaption>
+				</td>
+				<td>
+				  <img src="./img/screenshot_7-6_23-57-15.png" width="400px"/>
+				  <figcaption>pixel-inspected</figcaption>
+				</td>
+				</tr>
+			</table>
+		</div>
+
+		<p>If you look at what happens as the sample rate increases, you can see that the ends of the red triangles are less broken, and the pixels are more continuous and appear blurred. This is because, as the sample rate increases, there are more samples included in the shape, and the shape no longer appears broken.</p>
+
 		<h2>Task 3: Transforms</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>Transformations in homogeneous coordinates are accomplished by multiplying the column vectors \( (x,y,1)^{T} \) representing coordinates by the following matrices.</p>
+
+		For translation:
+		\[ \begin{pmatrix}
+		1 & 0 & d_{x}\\
+		0 & 1 & d_{y}\\
+		0 & 0 & 1
+		\end{pmatrix} \]
+
+		For scaling:
+		\[ \begin{pmatrix}
+		s_{x} & 0 & 0\\
+		0 & s_{y} & 0\\
+		0 & 0 & 1
+		\end{pmatrix} \]
+
+		For rotation (counterclockwise):
+		\[ \begin{pmatrix}
+		\cos{\theta} & -\sin{\theta} & 0\\
+		\sin{\theta} & \cos{\theta} & 0\\
+		0 & 0 & 1
+		\end{pmatrix} \]
+
+		<p>With these transforms, the corresponding transforms in SVG are rendered. Here is a rendering of <i>robot.svg</i>:</p>
+		<figure>
+			<img src="./img/screenshot_7-7_0-22-36.png" width="400px"/>
+			<figcaption>Rendering of <i>robot.svg</i></figcaption>
+		</figure>
+
+		<p>By modifying these transforms in the SVG file, you can make your robot do interesting things. Below is a version of my robot image with different colors and a running motion.</p>
+
+		<figure>
+			<img src="./img/screenshot_7-7_0-22-38.png" width="400px"/>
+			<figcaption>Rendering of <i>my_robot.svg</i></figcaption>
+		</figure>
 
 		<h2>Task 4: Barycentric coordinates</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>The barycentric coordinate system is a coordinate system that expresses the location of a point within a triangle relative to each vertex of the triangle. For a point \(P\) and a triangle \(ABC\), the barycentric coordinate of the point is \((\alpha, \beta, \gamma)\) such that: </p>
+
+		\[ P = \alpha A + \beta B + \gamma C, \quad \alpha + \beta + \gamma = 1 \]
+
+		<p>Each component of the coordinate represents a proportional distance from the opposite side of the corresponding vertex. Alternatively, the coordinate of a point can be interpreted as the mass of each vertex for that point to become the barycenter of the triangle. From this perspective, each component represented by a coordinate acts as a "weight" in the weighted average of the vertices of the triangle. Through the barycentric coordinate system, it is possible to have a one-to-one correspondence for each point between different triangles.</p>
+
+		<p>Below is an example of visualizing a barycentric coordinate system. In a triangle, each vertex has a color corresponding to each pure RGB component, and the color of each pixel within the triangle is a weighted average of the weights corresponding to the barycentric coordinates of that point.</p>
+		
+		<figure>
+			<img src="./img/screenshot_7-7_0-30-44.png" width="400px"/>
+			<figcaption>Color triangle showing barycentric coordinates</i></figcaption>
+		</figure>
+
+		<p>The barycentric coordinate system allows us to represent gradients within a triangle. The following color wheel is a rendering that utilizes this.</p>
+		
+		<figure>
+			<img src="./img/screenshot_7-7_0-30-46.png" width="400px"/>
+			<figcaption>Color wheel</i></figcaption>
+		</figure>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
