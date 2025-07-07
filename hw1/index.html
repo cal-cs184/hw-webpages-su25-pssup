@@ -23,55 +23,85 @@
 			body {
 				font-family: 'Inter', sans-serif;
 			}
+
+			.table-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+
+			.table {
+				width: 100%;
+				text-align: center;
+				border-collapse: collapse;
+			}
+			
+			.table td {
+				text-align: center;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<h1>CS184/284A Summer 2025 Homework 1 Write-Up</h1>
+		<div style="text-align: center;">Names: Seongsoo Park</div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: <a href="https://pssup.github.io/hw-webpages-agoodwriter/">https://pssup.github.io/hw-webpages-agoodwriter/</a>
 		
 		<br>
 
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-
-		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
+		Link to GitHub repository: <a href="https://github.com/pssup/hw-webpages-agoodwriter">https://github.com/pssup/hw-webpages-agoodwriter</a>
 
 		<!--
 		We've already added one heading per task, to make your write-up as navigable when grading. Please fit your write-up within these sections!
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		<p>In this assignment, I implemented a renderer that can display a simple SVG file as an image using a rasterizer. Starting with drawing a triangle, antialiasing is implemented using supersampling. Then, linear transformations such as translation, scaling, and rotation are implemented. Gradients within the triangle are also implemented using barycentric interpolation. Finally, texture mapping is implemented using mipmaps.</p>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>The most basic way to rasterize a triangle is to check for each point whether it is inside the triangle. For each point inside the bounding box of the triangle, check which side of the line connecting the two points of the triangle the point is on. The formula for checking for a line is as follows:</p>
+
+		\[ L_i(x, y) = -(x - X_i) (Y_{i+1} - Y_i) + (y - Y_i) (X_{i+1} - X_i) \]
+
+		<p>The sign of \( L_i \) determines which side of the line the point is on. The signs of \( L_i \) must be the same for all three lines, and whether this sign is positive or negative when the point is inside the triangle is determined based on whether the vertices of the triangle are oriented clockwise or counterclockwise.</p>
+
+		<p>Note that the check here for each point is performed only within the bounding box of the triangle. The bounding box of a triangle is the smallest rectangle that the triangle can fit inside, and the bounding box can be obtained by finding the minimum and maximum x and y coordinates of the triangle's vertices. Therefore, the algorithm implemented in the code is to check each sample within the bounding box of the triangle; it is efficient enough for the purpose.</p>
+
+		<p>Below is an example of rendering an svg file with basic rasterization.</p>
+		<figure style="text-align: center;">
+			<img src="./img/screenshot_7-6_23-53-6.png" width="400px"/>
+			<figcaption>Caption goes here.</figcaption>
+		</figure>
+
+		<p>If you look at the thin section of a triangle here, the shape appears to be "broken". This happens because the triangle's sides pass between the points in the middle of the grid, and the points beyond are included between the triangle's sides. You can see this in the figure below:</p>
+		
+		<figure style="text-align: center;">
+			<img src="./img/screenshot_7-6_23-52-38.png" width="400px"/>
+			<figcaption>Caption goes here.</figcaption>
+		</figure>
 
 		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<div class="table-container">
+			<table class="table">
 			  <tr>
-				<td style="text-align: center;">
+				<td>
 				  <img src="lion.jpg" width="400px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
-				<td style="text-align: center;">
+				<td>
 				  <img src="lion.jpg" width="400px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
-				<td style="text-align: center;">
+				<td>
 				  <img src="lion.jpg" width="400px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
-				<td style="text-align: center;">
+				<td>
 				  <img src="lion.jpg" width="400px"/>
 				  <figcaption>Caption goes here.</figcaption>
 				</td>
@@ -80,7 +110,11 @@
 		</div>
 		
 		<h2>Task 2: Antialiasing by Supersampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>Supersampling is the process of sampling a pixel using a denser number of samples. It starts with a higher resolution image and then downsamples it to the final output resolution.</p>
+
+		<p>In the rasterization pipeline, there was originally a direct one-to-one correspondence between the pixels of the final output image and the samples output by rasterization. However, after adding supersampling, each pixel corresponds to multiple samples, and the output is the average of each sample. This process makes the image output smoother for the boundaries of shapes, and antialiasing is performed. Supersampling is a useful method for realizing antialiasing through simple ideas and implementations.</p>
+
+		<p>Detailed explanation of the code that implements supersampling: For an image of the original <code>width × height</code>, when <code>sample_rate</code> samples are placed in one pixel, the scaling rate for one axis is <code>sideRate = sqrt(sample_rate)</code>. And in the <code>sample_buffer</code>, the sample at the index <code>y * width * sideRate + x</code> corresponds to the coordinate \( ((x+0.5)/r, (y+0.5)/r) \) where \(r\) is the <code>sideRate</code>. </p>
 
 		<h2>Task 3: Transforms</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
