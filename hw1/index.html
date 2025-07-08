@@ -62,13 +62,13 @@
 		<p>In this assignment, I implemented a renderer that can display a simple SVG file as an image using a rasterizer. Starting with drawing a triangle, antialiasing is implemented using supersampling. Then, linear transformations such as translation, scaling, and rotation are implemented. Gradients within the triangle are also implemented using barycentric interpolation. Finally, texture mapping is implemented using mipmaps.</p>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		<p>The most basic way to rasterize a triangle is to check for each point whether it is inside the triangle. For each point inside the bounding box of the triangle, check which side of the line connecting the two points of the triangle the point is on. The formula for checking for a line is as follows:</p>
+		<p>The most basic way to rasterize a triangle is to check each point to determine whether it is inside the triangle. For each point inside the bounding box of the triangle, check which side of the line connecting the two points of the triangle the point is on. The formula for checking for a line is as follows:</p>
 
 		\[ L_i(x, y) = -(x - X_i) (Y_{i+1} - Y_i) + (y - Y_i) (X_{i+1} - X_i) \]
 
 		<p>The sign of \( L_i \) determines which side of the line the point is on. The signs of \( L_i \) must be the same for all three lines, and whether this sign is positive or negative when the point is inside the triangle is determined based on whether the vertices of the triangle are oriented clockwise or counterclockwise.</p>
 
-		<p>Note that the check here for each point is performed only within the bounding box of the triangle. The bounding box of a triangle is the smallest rectangle that the triangle can fit inside, and the bounding box can be obtained by finding the minimum and maximum x and y coordinates of the triangle's vertices. Therefore, the algorithm implemented in the code is to check each sample within the bounding box of the triangle; it is efficient enough for the purpose.</p>
+		<p>Note that the check here for each point is performed only within the bounding box of the triangle. The bounding box of a triangle is the smallest rectangle that the triangle can fit inside, and the bounding box can be obtained by finding the minimum and maximum x and y coordinates of the triangle's vertices. Therefore, the algorithm implemented in the code checks each sample within the bounding box of the triangle, which is efficient enough for the purpose.</p>
 
 		<p>Below is an example of rendering an svg file with basic rasterization.</p>
 		<figure>
@@ -116,7 +116,7 @@
 
 		<p>Detailed explanation of the code that implements supersampling: For an image of the original <code>width × height</code>, when <code>sample_rate</code> samples are placed in one pixel, the scaling rate for one axis is <code>sideRate = sqrt(sample_rate)</code>. And in the <code>sample_buffer</code>, the sample at the index <code>y * width * sideRate + x</code> corresponds to the coordinate \( ((x+0.5)/r, (y+0.5)/r) \) where \(r\) is the <code>sideRate</code>. </p>
 
-		<p>The following shows the renders for sample rates of 1, 4, and 16 respectively.</p>
+		<p>The following images show the renders for sample rates of 1, 4, and 16 respectively.</p>
 
 		<div class="table-container">
 			<table class="table">
@@ -156,7 +156,7 @@
 		<p>If you look at what happens as the sample rate increases, you can see that the ends of the red triangles are less broken, and the pixels are more continuous and appear blurred. This is because, as the sample rate increases, there are more samples included in the shape, and the shape no longer appears broken.</p>
 
 		<h2>Task 3: Transforms</h2>
-		<p>Transformations in homogeneous coordinates are accomplished by multiplying the column vectors \( (x,y,1)^{T} \) representing coordinates by the following matrices.</p>
+		<p>Transformation is the process of moving the coordinates of one point to another, including translation, scaling, and rotation. Linear transformations in homogeneous coordinates are accomplished by multiplying the column vectors \( (x,y,1)^{T} \) representing coordinates by the following matrices.</p>
 
 		For translation:
 		\[ \begin{pmatrix}
@@ -179,13 +179,13 @@
 		0 & 0 & 1
 		\end{pmatrix} \]
 
-		<p>With these transforms, the corresponding transforms in SVG are rendered. Here is a rendering of <i>robot.svg</i>:</p>
+		<p>With these transform matrices, the corresponding transforms in SVG are rendered. Here is a rendering of <i>robot.svg</i>:</p>
 		<figure>
 			<img src="./img/screenshot_7-7_0-22-36.png" width="400px"/>
 			<figcaption>Rendering of <i>robot.svg</i></figcaption>
 		</figure>
 
-		<p>By modifying these transforms in the SVG file, you can make your robot do interesting things. Below is a version of my robot image with different colors and a running motion.</p>
+		<p>By modifying these transforms in the SVG file, you can make your robot do interesting things. Below is a version of my robot image, where the robot with various colors poses a running motion.</p>
 
 		<figure>
 			<img src="./img/screenshot_7-7_0-22-38.png" width="400px"/>
@@ -197,9 +197,15 @@
 
 		\[ P = \alpha A + \beta B + \gamma C, \quad \alpha + \beta + \gamma = 1 \]
 
-		<p>Each component of the coordinate represents a proportional distance from the opposite side of the corresponding vertex. Alternatively, the coordinate of a point can be interpreted as the mass of each vertex for that point to become the barycenter of the triangle. From this perspective, each component represented by a coordinate acts as a "weight" in the weighted average of the vertices of the triangle. Through the barycentric coordinate system, it is possible to have a one-to-one correspondence for each point between different triangles.</p>
+		<p>Each component of the coordinate represents a proportional distance from the opposite side of the corresponding vertex. From this perspective, for the points in 2D space, the formulas for each component of the barycentric coordinate of \(P\) are:</p>
 
-		<p>Below is an example of visualizing a barycentric coordinate system. In a triangle, each vertex has a color corresponding to each pure RGB component, and the color of each pixel within the triangle is a weighted average of the weights corresponding to the barycentric coordinates of that point.</p>
+		\[ \alpha = \frac{L_{BC}(P)}{L_{BC}(A)}, \quad \beta = \frac{L_{CA}(P)}{L_{CA}(B)}, \quad \gamma = 1 - \alpha - \beta \]
+		
+		<p>where \(L_{l}(P)\) is the function measuring the relative distance of the point \(P\) from the line \(l\). (See Task 1) </p>
+		
+		<p>Alternatively, the coordinate of a point can be interpreted as the mass of each vertex for that point to become the barycenter of the triangle. From this perspective, each component represented by a coordinate acts as a "weight" in the weighted average of the vertices of the triangle. Through the barycentric coordinate system, it is possible to have a one-to-one correspondence for each point between different triangles.</p>
+
+		<p>Below is an example of visualizing a barycentric coordinate system. In a triangle, each vertex has a color corresponding to each pure RGB component, and the color of each pixel within the triangle is a weighted average of the weights corresponding to the barycentric coordinate of that point.</p>
 		
 		<figure>
 			<img src="./img/screenshot_7-7_0-30-44.png" width="400px"/>
@@ -214,7 +220,7 @@
 		</figure>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		<p>Texture mapping is mapping an existing texture to the shape of the screen. As a simple case, pixel sampling is performed by sampling the texture coordinates \((u,v)\) corresponding to the coordinates \((x,y)\) of each pixel sample of the target image, where the correspondence between the two coordinates is performed through barycentric coordinates. When sampling in the texture, there are two sampling methods: nearest sampling and bilinear sampling. Nearest sampling simply takes a sample of the nearest pixel in the grid, while bilinear sampling takes four pixels around the sample and linearly interpolates them in two dimensions. While bilinear sampling is more complex than nearest sampling, bilinear sampling can produce smoother images.</p>
+		<p>Texture mapping is mapping an existing texture to the shape of the screen. As a simple case, pixel sampling is performed by sampling the texture coordinates \((u,v)\) corresponding to the coordinates \((x,y)\) of each pixel sample of the target image, where the correspondence between the two coordinates is performed through barycentric coordinates. When sampling the points in the texture, there are two sampling methods: nearest sampling and bilinear sampling. Nearest sampling simply takes a sample of the nearest pixel in the grid, while bilinear sampling takes four pixels around the sample and linearly interpolates them in two dimensions. While bilinear sampling is more complex than nearest sampling, bilinear sampling can produce smoother images.</p>
 
 		<p>Below are image renderings of the same svg file, showing the differences between different parameter options.</p>
 
@@ -222,43 +228,34 @@
 			<table class="table">
 			  <tr>
 				<td>
-				  <img src="./img/screenshot_7-5_23-29-23.png" width="400px"/>
+				  <img src="./img/screenshot_7-8_1-32-23.png" width="400px"/>
 				  <figcaption>nearest sampling, 1 sample per pixel</figcaption>
 				</td>
 				<td>
-				  <img src="./img/screenshot_7-5_23-29-25.png" width="400px"/>
-				  <figcaption>bilinear sampling, 1 sample per pixel</figcaption>
+				  <img src="./img/screenshot_7-8_1-32-26.png" width="400px"/>
+				  <figcaption>nearest sampling, 16 samples per pixel</figcaption>
 				</td>
 				</tr>
 				<tr>
 				<td>
-				  <img src="./img/screenshot_7-5_23-29-31.png" width="400px"/>
-				  <figcaption>nearest sampling, 16 samples per pixel</figcaption>
+				  <img src="./img/screenshot_7-8_1-32-30.png" width="400px"/>
+				  <figcaption>bilinear sampling, 1 sample per pixel</figcaption>
 				</td>
 				<td>
-				  <img src="./img/screenshot_7-5_23-29-33.png" width="400px"/>
+				  <img src="./img/screenshot_7-8_1-32-32.png" width="400px"/>
 				  <figcaption>bilinear sampling, 16 samples per pixel</figcaption>
 				</td>
 				</tr>
 			</table>
 		</div>
 
+		<p>If you look at the images above, you can see that bilinear sampling has fewer line breaks and is relatively smoother than nearest sampling, even at lower sampling rates. This is because bilinear sampling takes into account surrounding samples in the texture and takes a weighted average.</p>
+
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
 		</div>
 	</body>
 </html>
