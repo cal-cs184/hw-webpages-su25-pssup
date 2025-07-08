@@ -65,24 +65,24 @@
 		<h2>Overview</h2>
 		<p>In this assignment, I implemented a renderer that can display a simple SVG file as an image using a rasterizer. Starting with drawing a triangle, antialiasing is implemented using supersampling. Then, linear transformations such as translation, scaling, and rotation are implemented. Gradients within the triangle are also implemented using barycentric interpolation. Finally, texture mapping is implemented using mipmaps.</p>
 
-		<p>Through this assignment, I was able to learn and experience the basics of computer graphics, such as triangle rendering, anti-aliasing, and texture mapping. And the section that allowed me to create my own custom images was also meaningful to me.</p>
+		<p>The most interesting part of this assignment for me was implementing gradient and texture matching via barycentric coordinates. I thought of this as the process of "translating" between different coordinate systems of different spaces (like translating between different languages), which had a very meaningful touch to me.</p>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		<p>The most basic way to rasterize a triangle is to check each point to determine whether it is inside the triangle. For each point inside the bounding box of the triangle, check which side of the line connecting the two points of the triangle the point is on. The formula for checking for a line is as follows:</p>
+		<p>The basic method of rasterizing a triangle is to check each pixel to determine whether it is inside the triangle. For each pixel within the bounding box of the triangle, sample the point at the center of the pixel, such that each coordinate of a sample is a half-integer. After that, for each point, check which side of the line the point is on, and repeat this process for all three edges of the triangle. The formula for checking for a line is as follows:</p>
 
 		\[ L_i(x, y) = -(x - X_i) (Y_{i+1} - Y_i) + (y - Y_i) (X_{i+1} - X_i) \]
 
-		<p>The sign of \( L_i \) determines which side of the line the point is on. The signs of \( L_i \) must be the same for all three lines, and whether this sign is positive or negative when the point is inside the triangle is determined based on whether the vertices of the triangle are oriented clockwise or counterclockwise.</p>
+		<p>For each line, the sign of \( L_i \) determines which side of the line the point \((x,y)\) is on. For a point to be inside the triangle, the signs of \( L_i \) for all three lines should agree. If the triangle is oriented clockwise, then \(L_i(x, y) \geq 0\) for all three lines, and for counterclockwise, \(L_i(x, y) \leq 0\) for all. (Remark that the coordinate system on the screen is oriented left-handed.)</p>
 
-		<p>Note that the check here for each point is performed only within the bounding box of the triangle. The bounding box of a triangle is the smallest rectangle that the triangle can fit inside, and the bounding box can be obtained by finding the minimum and maximum x and y coordinates of the triangle's vertices. Therefore, the algorithm implemented in the code checks each sample within the bounding box of the triangle, which is efficient enough for the purpose.</p>
+		<p>The code implements the checking process by checking only for the pixels within the bounding box of the triangle. It is the smallest rectangle that the triangle can fit inside, and it can be found by considering the minimum and maximum values of the x and y coordinates of the triangle's vertices. Therefore, the algorithm implemented in the code checks only the samples within the bounding box, which is efficient enough for the purpose.</p>
 
-		<p>Below is an example of rendering an svg file with basic rasterization.</p>
+		<p>Below is an example of rendering an svg file (<i>basic/test4.svg</i>) with basic rasterization.</p>
 		<figure>
 			<img src="./img/screenshot_7-6_23-53-6.png" width="400px"/>
 			<figcaption>Basic rasterization</figcaption>
 		</figure>
 
-		<p>If you look at the thin section of a triangle here, the shape appears to be "broken". This happens because the triangle's sides pass between the points in the middle of the grid, and the points beyond are included between the triangle's sides. You can see this in the figure below:</p>
+		<p>If you look at the thin section of a triangle here, the shape appears to be "broken". This happens because the triangle's edges pass between the points in the middle of the grid, and the points beyond are included between the triangle's edges. You can see this in the figure below:</p>
 		
 		<figure>
 			<img src="./img/screenshot_7-6_23-52-38.png" width="400px"/>
@@ -173,17 +173,17 @@
 		</figure>
 
 		<h2>Task 4: Barycentric coordinates</h2>
-		<p>The barycentric coordinate system is a coordinate system that expresses the location of a point within a triangle relative to each vertex of the triangle. For a point \(P\) and a triangle \(ABC\), the barycentric coordinate of the point is \((\alpha, \beta, \gamma)\) such that: </p>
+		<p>The barycentric coordinates of a point \(P\) about a triangle \(ABC\) describe the position of the point relative to the vertices \(A, B, C\) of the triangle. It is defined as \((\alpha, \beta, \gamma)\) such that: </p>
 
 		\[ P = \alpha A + \beta B + \gamma C, \quad \alpha + \beta + \gamma = 1 \]
 
-		<p>Each component of the coordinate represents a proportional distance from the opposite side of the corresponding vertex. From this perspective, for the points in 2D space, the formulas for each component of the barycentric coordinate of \(P\) are:</p>
+		<p>Each coordinate component represents a proportional distance from the opposite side of the corresponding vertex. From this perspective, for the points in 2D space, the formulas for the components of the barycentric coordinates of \(P\) are:</p>
 
 		\[ \alpha = \frac{L_{BC}(P)}{L_{BC}(A)}, \quad \beta = \frac{L_{CA}(P)}{L_{CA}(B)}, \quad \gamma = 1 - \alpha - \beta \]
 		
 		<p>where \(L_{l}(P)\) is the function measuring the relative distance of the point \(P\) from the line \(l\). (See Task 1) </p>
 		
-		<p>Alternatively, the coordinate of a point can be interpreted as the mass of each vertex for that point to become the barycenter of the triangle. From this perspective, each component represented by a coordinate acts as a "weight" in the weighted average of the vertices of the triangle. Through the barycentric coordinate system, it is possible to have a one-to-one correspondence for each point between different triangles.</p>
+		<p>Alternatively, the coordinates of a point can be interpreted as the mass at the vertices for that point to become the barycenter of the triangle. From this perspective, each coordinate component acts as a "weight" in the weighted average of the vertices. Through the barycentric coordinate system, it is possible to have a one-to-one correspondence for each point between different triangles.</p>
 
 		<p>Below is an example of visualizing a barycentric coordinate system. In a triangle, each vertex has a color corresponding to each pure RGB component, and the color of each pixel within the triangle is a weighted average of the weights corresponding to the barycentric coordinate of that point.</p>
 		
@@ -196,7 +196,7 @@
 		
 		<figure>
 			<img src="./img/screenshot_7-7_0-30-46.png" width="400px"/>
-			<figcaption>Color wheel</i></figcaption>
+			<figcaption>Color wheel (<i>basic/test7.svg</i>)</i></figcaption>
 		</figure>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
@@ -229,7 +229,7 @@
 			</table>
 		</div>
 
-		<p>If you look at the images above, you can see that bilinear sampling has fewer line breaks and is relatively smoother than nearest sampling, even at lower sampling rates. This is because bilinear sampling takes into account surrounding samples in the texture and takes a weighted average.</p>
+		<p>Looking at the images above, it is observed that bilinear sampling has fewer line breaks and is relatively smoother than nearest sampling, even at a lower sample rate. This is because bilinear sampling takes into account surrounding samples in the texture and takes a weighted average.</p>
 
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 		<p>Level sampling refers to using different downsampling levels of texture depending on the size of the texture displayed on the screen. After low-pass filtering, each downsampled version of the texture is stored in a different level in the mipmap. By using the texture of each level according to the size of the target image, an antialiasing effect can be achieved.</p>
@@ -284,7 +284,7 @@
 
 		<p>Among the four images, the one with nearest level and bilinear sampling appears the smoothest and most blurred.</p>
 
-		<p>So far, we have seen three sampling techniques: pixel sampling, level sampling, and supersampling. Comparing the pros and cons of each method, supersampling shows excellent antialiasing effects as the number of samples per pixel is increased, but the tradeoff is high memory usage and slow speed. Pixel sampling requires little additional memory or time, but antialiasing performance is not that good. Level sampling takes some time to determine the mipmap level for each pixel, but requires no additional memory, and antialiasing is decent.</p>
+		<p>So far, we have seen three sampling techniques: pixel sampling, level sampling, and supersampling. Comparing the pros and cons of each method, supersampling shows excellent antialiasing effects as the sample rate is increased, but the tradeoff is high memory usage and slow speed. Pixel sampling requires little additional memory or time, but antialiasing performance is not that good. Level sampling takes some time to determine the mipmap level for each pixel, but requires no additional memory, and antialiasing is decent.</p>
 
 		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
 
