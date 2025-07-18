@@ -23,20 +23,28 @@
 			body {
 				font-family: 'Inter', sans-serif;
 			}
+
+			.table {
+				border: 1px solid black;
+				border-collapse: collapse;
+			}
+			.table tr, .table th, .table td {
+				border: 1px solid black;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 2 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<h1>CS184/284A Summer 2025 Homework 2 Write-Up</h1>
+		<div style="text-align: center;">Names: Seongsoo Park</div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: <a href="https://cal-cs184.github.io/hw-webpages-su25-pssup/">https://cal-cs184.github.io/hw-webpages-su25-pssup/</a>
 
 		<br>
 		
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184/hw-webpages-su25-pssup">https://github.com/cal-cs184/hw-webpages-su25-pssup</a>
 
 		<figure>
 			<img src="teapot.png" alt="Teapot" style="width:50%"/>
@@ -53,64 +61,203 @@
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>A Bezier curve is a polynomial curve that represents a parameter through control points. One way to implement this is through the de Casteljau subdivision. Given control points \(\mathbf{p}_{1}\) to \(\mathbf{p}_{n}\) and the parameter \(t\), one step of the algorithm computes new points \(\mathbf{p}'_{1}\) to \(\mathbf{p}'_{n-1}\) as follows:</p>
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		\[
+		\mathbf{p}'_{i} = (1-t) \mathbf{p}_{i} + t \mathbf{p}_{i+1}
+		\]
+
+		<p>By repeating this process until only one point remains, we will finally obtain the point on the polynomial curve for parameter \(t\) as follows:</p>
+
+		\[
+		\mathbf{f}(t; \mathbf{p}_{1}, \dots, \mathbf{p}_{n}) = \sum_{i=1}^{n}{\pmatrix{n-1\\i-1} (1-t)^{n-i} t^{i-1} \mathbf{p}_{i}}
+		\]
+
+		<p>Below is an example of a Bezier curve with six control points.</p>
+
+		<figure>
+			<img src="img/curve_1.png" width="400px"/>
+			<figcaption>A Bezier curve with 6 control points</figcaption>
+		</figure>
+
+		<p>The point at the center of the curve (\(t=0.5\)) is evaluated in these steps:</p>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="img/curve_2.png" width="400px"/>
+				  <figcaption>Step 1</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="img/curve_3.png" width="400px"/>
+				  <figcaption>Step 2</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="img/curve_4.png" width="400px"/>
+				  <figcaption>Step 3</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="img/curve_5.png" width="400px"/>
+				  <figcaption>Step 4</figcaption>
+				</td>
+			  </tr>
+				<tr>
+				<td colspan="2" style="text-align: center;">
+				  <img src="img/curve_6.png" width="400px"/>
+				  <figcaption>Final Step</figcaption>
+				</td>
+				</tr>
+			</table>
+		</div>
+
+		<p>The below shows drawing another curve by adjusting the positions of the control points. It also shows how the positions of the points on the curve change as the value of the parameter \(t\) changes.</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="img/curve_7.png" width="400px"/>
+				  <figcaption>New curve obtained by adjusting control points</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="img/curve_8.png" width="400px"/>
+				  <figcaption>Evaluation of the point at the center of the curve</figcaption>
+				</td>
+			  </tr>
+				<tr>
+				<td style="text-align: center;">
+				  <img src="img/curve_9.png" width="400px"/>
+				  <figcaption>Evaluation of the point at the right side of the curve</figcaption>
+				</td>
+				</tr>
+			</table>
+		</div>
+
+		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
+		<p>A Bezier surface is an application of the principle of Bezier curve extended to 2D. For the 2D grid of the control points \((\mathbf{p}_{11}, \dots, \mathbf{p}_{1n}), \dots, (\mathbf{p}_{n1}, \dots, \mathbf{p}_{nn}) \), a point \(\mathbf{r}\) on the Bezier surface at the parameters \((u, v)\) is calculated in this way:</p>
+
+		\[
+		\mathbf{q}_{k} = \mathbf{f}(u; \mathbf{p}_{k1}, \dots, \mathbf{p}_{kn}) \quad \textrm{for } 1 \leq k \leq n \\
+		\mathbf{r} = \mathbf{f}(v; \mathbf{q}_{1}, \dots, \mathbf{q}_{n})
+		\]
+
+		<p>where \(\mathbf{f}\) is the function for Bezier curves in Part 1, and it is implemented via the 1D de Casteljau algorithm.</p>
+
+		<p>Below are the screenshots of <code>bez/teapot.bez</code> rendered by my implementation.</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="img/surface_1.png" width="400px"/>
+				  <figcaption>initial view</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="img/surface_2.png" width="400px"/>
+				  <figcaption>view nearer</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
-		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>One way to smoothly shade a triangle mesh is to compute a normal vector for each vertex of the mesh. The area-weighted normal method implements calculating the normal vector for the vertex in this way: For each vertex \(v\), the normal vector at \(v\) can be obtained by adding the normal vectors \(\mathbf{N}_i\) of the faces adjacent to \(v\) and normalizing the result. This is conceptually the same as taking the unit normal vector \(\mathbf{\hat{N}}_i\) for each face and multiplying its area \(A_i\) as the weight.</p>
+
+		\[
+		\mathbf{\hat{N}}_v = \frac{\sum_{i}{\mathbf{N}_i}}{\| \sum_{i}{\mathbf{N}_i} \|} = \frac{\sum_{i}{A_i \mathbf{\hat{N}}_i}}{\| \sum_{i}{A_i \mathbf{\hat{N}}_i} \|}
+		\]
+
+		<p>The normal vector \(\mathbf{N}_i\) of each face can be calculated for using the coordinates \(\mathbf{p}_{i1}, \mathbf{p}_{i2}, \mathbf{p}_{i3}\) of the three vertices of the face:</p>
+
+		\[
+		\mathbf{N}_i = (\mathbf{p}_{i2} - \mathbf{p}_{i1}) \times (\mathbf{p}_{i3} - \mathbf{p}_{i1}) = A_i \mathbf{\hat{N}}_i
+		\]
+
+		<p>The following images show the difference in rendering without vertex normals and with them.</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="img/normal_without.png" width="400px"/>
+				  <figcaption>rendering without vertex normals</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="img/normal_with.png" width="400px"/>
+				  <figcaption>rendering with vertex normals</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h3>Part 4: Edge flip</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>Edge flip is the process of transforming the topology of a mesh \(abdc\) by reconnecting edge \(bc\) to vertices \(a\) and \(d\), as shown in the following diagram.</p>
+		
+		<figure>
+			<img src="img/edgeflip.jpg" width="400px"/>
+			<figcaption>Diagram for the edge flip and the mesh. <span style="font-size: 50%">Source: <a href="https://cs184.eecs.berkeley.edu/su25/hw/hw2/section2/">https://cs184.eecs.berkeley.edu/su25/hw/hw2/section2/</a></span></figcaption>
+		</figure>
+
+		<p>As the topological transformation of the mesh occurs, the relationships between the vertices and the faces are changed: The face \(abc\) is rearranged to \(adc\), and face \(cbd\) to \(abd\). The half-edges within the face are also rearranged accordingly. The following diagram shows this change.</p>
+		
+		<figure>
+			<img src="img/edgeflip_diagram.png" width="400px"/>
+			<figcaption>Diagram showing affected half-edges and faces. <span style="font-size: 50%">(Modified from the above image)</span></figcaption>
+		</figure>
+
+		<p>Here are the things I did in my implementation:
+			<ul>
+				<li>Reassigned half-edges for each face, edge, and vertex in the mesh. I took the minimal approach of not touching elements that referenced the elements outside the target mesh.</li>
+				<li>Assigned twin, next, vertex, edge, and face for each of the 6 half-edges in the mesh. Also reassigned twins for the 4 related half-edges outside the mesh.</li>
+				<li>I have it set to ignore requests if the flipping edge is on a boundary, or if either of the two adjacent faces is on a boundary.</li>
+			</ul>
+		</p>
+
+		<p>During the development, I initially considered about twin, next, vertex, edge, face only for the 6 half-edges in the mesh, but I did not consider about setting new twins for the 4 half-edges outside the mesh that has twin relationships with the inside half-edges. As a result, the screen froze when I clicked on a vertex in inspection after an edge flip. To solve this, I traversed the half-edges around the vertex and investigated the addresses, and found out that the half-edges outside of the target mesh of the edge flip were not set properly. This allowed me to fix the bug.</p>
 
 		<h3>Part 5: Edge split</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+		<figure>
+			<img src="img/split.jpg" width="400px"/>
+			<figcaption>Diagram for the edge split and the mesh. <span style="font-size: 50%">Source: <a href="https://cs184.eecs.berkeley.edu/su25/hw/hw2/section2/">https://cs184.eecs.berkeley.edu/su25/hw/hw2/section2/</a></span></figcaption>
+		</figure>
+
+		<p>In the edge splitting task, I added the following new elements:
+			<ul>
+				<li>Faces: <code>f_2</code> (\(dcm\)), <code>f_3</code> (\(cam\)). The original faces <code>f_0</code> (\(abc\)) and <code>f_1</code> (\(bdc\)) were reallocated as the faces \(abm\) and \(bdm\) respectively.</li>
+				<li>Edges: <code>e_ma</code>, <code>e_md</code>, <code>e_mc</code>. The original edge <code>e0</code> was reallocated as the edge \(mb\). </li>
+				<li>Vertices: <code>v_m</code> (\(m\))</li>
+				<li>Half-edges: <code>h_ma</code>, <code>h_mc</code>, <code>h_md</code>, <code>h_am</code>, <code>h_cm</code>, <code>h_dm</code>. The half-edge <code>h_0</code> and its twin <code>h_3</code>, originally pointing from \(b\) to \(c\) and from \(c\) to \(b\) respectively, were reallocated to point from \(b\) to \(m\) and from \(m\) to \(b\), respectively.</li>
+			</ul>
+		</p>
+		
+		<figure>
+			<img src="img/split_diagram.png" width="400px"/>
+			<figcaption>Diagram showing affected half-edges, faces and edges. <span style="font-size: 50%">(Modified from the above image)</span></figcaption>
+		</figure>
+
+		<p>I updated the pointers for everything that changed. Unlike Part 4, I didn't reallocate the half-edges that had twins outside of mesh \(abdc\), I just left them where they were. (But I did update the ones that changed, like <code>next()</code>.) And as in Part 4, I have it set to ignore the request for the boundary mesh.</p>
+
+		<p>Also, to distinguish between edges that were cut in half from the original edge (\(bm\) and \(cm\)) and completely newly created edges (\(ma\) and \(md\)), I have assigned to the former a half-edge coming into the center vertex \(m\), and to the latter a half-edge going out of \(m\). This will be important in Part 6.</p>
 
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>I implemented the loop subdivision in these steps:
+			<ol>
+				<li>For the old vertices, compute the new positions using the Loop subdivision rule. <i>Note that it should be performed as a batch, not immediately; the actual updating process happens in step 5.</i></li>
+				<li>Compute the positions of the newly added vertices, which are the midpoints of the old edges.</li>
+				<li>Split edge for all old edges, and mark the newly created elements as new.</li>
+				<li>Flip edge for all new edges whose related half-edge is pointing from an new vertex to an old vertex. <i>What I did in Part 5 is to help distinguishing between edges that were created by splitting old edges (which should not be flipped) and edges that were added entirely new (which should be flipped).</i></li>
+				<li>Update the final vertex positions.</li>
+			</ol>
+		</p>
 
-		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
 		</div>
 	</body>
 </html>
