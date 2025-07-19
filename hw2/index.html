@@ -55,12 +55,14 @@
 		-->
 
 		<h2>Overview</h2>
-		In this assignment, I implemented two topics: Bezier surfaces and mesh operations. Through this assignment, I could gain an understanding of the principles of 3D graphics.
+		<p>In this assignment, I implemented two topics: Bezier surfaces and mesh operations. The Bezier surface is implemented using the interpolation method of the Bezier curve, which is then obtained through the de Casteljau algorithm. Meanwhile, the topology of the mesh can be transformed through mesh operations, such as edge flip and split. Through these operations, loop subdivision can be implemented, which is a method of upsampling the mesh. Additionally, vertex normals can also be obtained through mesh operations, which are used for shading.</p>
+		
+		<p>Through this assignment, I was able to gain an understanding of the principles of 3D graphics. Among the topics covered, the Bezier curve interpolation method was the most interesting to me. I found the structure of the Bezier curve to be mysterious, where the curve is secretly "controlled" by control points that are not directly visible from the curve.</p>
 
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		<p>A Bezier curve is a polynomial curve that represents a parameter through control points. One way to implement this is through the de Casteljau subdivision. Given control points \(\mathbf{p}_{1}\) to \(\mathbf{p}_{n}\) and the parameter \(t\), one step of the algorithm computes new points \(\mathbf{p}'_{1}\) to \(\mathbf{p}'_{n-1}\) as follows:</p>
+		<p>A Bezier curve is a parametric polynomial curve that is represented through control points. One way to implement this is through the de Casteljau subdivision. Given the control points \(\mathbf{p}_{1}\) to \(\mathbf{p}_{n}\) and the parameter \(t\), one step of the algorithm computes new points \(\mathbf{p}'_{1}\) to \(\mathbf{p}'_{n-1}\) as follows:</p>
 
 		\[
 		\mathbf{p}'_{i} = (1-t) \mathbf{p}_{i} + t \mathbf{p}_{i+1}
@@ -112,7 +114,7 @@
 			</table>
 		</div>
 
-		<p>The below shows drawing another curve by adjusting the positions of the control points. It also shows how the positions of the points on the curve change as the value of the parameter \(t\) changes.</p>
+		<p>The following images show the process of drawing another curve by adjusting the positions of the control points. It also shows how the positions of the points on the curve change as the value of the parameter \(t\) changes.</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -138,7 +140,7 @@
 		</div>
 
 		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		<p>A Bezier surface is an application of the principle of the Bezier curve extended to 2D. For the 2D grid of the control points \((\mathbf{p}_{11}, \dots, \mathbf{p}_{1n}), \dots, (\mathbf{p}_{n1}, \dots, \mathbf{p}_{nn}) \), a point \(\mathbf{r}\) on the Bezier surface at the parameters \((u, v)\) is calculated in this way:</p>
+		<p>The Bezier surface is an application of the principle of the Bezier curve extended to two parameters. For the 2D grid of the control points \((\mathbf{p}_{11}, \dots, \mathbf{p}_{1n}), \dots, (\mathbf{p}_{n1}, \dots, \mathbf{p}_{nn}) \), a point \(\mathbf{r}\) on the Bezier surface for the parameters \((u, v)\) is calculated in this way:</p>
 
 		\[
 		\mathbf{q}_{k} = \mathbf{f}(u; \mathbf{p}_{k1}, \dots, \mathbf{p}_{kn}) \quad \textrm{for } 1 \leq k \leq n \\
@@ -271,7 +273,7 @@
 
 		<p>Also, to distinguish between edges that were cut in half from the original edge (\(bm\) and \(cm\)) and completely newly created edges (\(ma\) and \(md\)), I have assigned to the former a half-edge coming into the center vertex \(m\), and to the latter a half-edge going out of \(m\). This will be used importantly in Part 6.</p>
 
-		<p>Unlike Part 4, I implemented Part 5 in one go, but in Part 6, I had trouble distinguishing between the cut edges and the completely new edges. To solve this, I went back to Part 5 and found a way to distinguish between the two.</p>
+		<p>Unlike Part 4, I implemented Part 5 in one go, but in Part 6, I had trouble distinguishing between the cut edges and the completely new edges. To solve this, I returned to Part 5 and found a way to distinguish between the two.</p>
 
 		<p>The following images show the mesh before and after performing edge splits, as well as after both edge splits and flips.</p>
 
@@ -304,8 +306,8 @@
 						<li>Note that it should be performed as a batch, not immediately; the actual updating process happens in step 5.</li>
 					</ul></li>
 				<li>Compute the positions of the newly added vertices, which are the midpoints of the old edges.</li>
-				<li>Split edge for all old edges, and mark the newly created elements as new.</li>
-				<li>Flip edge for all new edges whose related half-edge is pointing from a new vertex to an old vertex.
+				<li>Split for all old edges, and mark the newly created elements as new.</li>
+				<li>Flip for all new edges whose related half-edge is pointing from a new vertex to an old vertex.
 					<ul>
 						<li>What I did in Part 5 was to help distinguish between edges that were created by splitting old edges (which should not be flipped) and edges that were added entirely new (which should be flipped).</li>
 						<li>The 4-1 subdivision is performed in steps 3 and 4.</li>
@@ -388,7 +390,7 @@
 
 		<p>As loop subdivision is run multiple times, the sharp corners and edges of the original mesh become smoother, although they remain relatively sharp compared to newly created ones.</p>
 
-		<p>Notice that when subdivision is performed on the cube, the mesh becomes asymmetric. This happens because the topology of the mesh that makes up the cube is asymmetric. To solve this, split each edge that passes over the face so that each face of the cube is composed of four triangles, and the subdivision becomes symmetric.</p>
+		<p>Notice that when subdivision is performed on the cube, the mesh becomes asymmetric. This happens because the topology of the mesh that composes the cube is asymmetric. To solve this, I have split each edge that passes over the face of the cube so that each face is made up of four triangles, and the subdivision becomes symmetric.</p>
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
