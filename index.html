@@ -69,7 +69,7 @@
 					<ul>
 						<li><a href="/hw1/index.html">Homework 1</a></li>
 						<li><a href="/hw2/index.html">Homework 2</a></li>
-						<li><a href="https://ranototaudio.github.io/184-hw/hw3/index.html">Homework 3 (with partner)</a></li>
+						<li><a href="https://ranototaudio.github.io/184-hw/hw3/index.html" data-redirect="true">Homework 3 (with partner)</a></li>
 						<li>Homework 4: N/A</li>
 					</ul>
 				</div>
@@ -82,7 +82,7 @@
 		var repo_name = window.location.href.substring(a+3)
 		for(var i = 0; i < links.length; i++){
 			var link = links[i]
-			if (link.href[0] !== '/') {
+			if (link.dataset.redirect) {
 				continue
 			}
 			var actual_name = link.href.substring(link.href.indexOf(".io")+4)
